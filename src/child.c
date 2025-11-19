@@ -57,6 +57,7 @@ static bool parse_and_sum(char *line, double *result) {
 		if (*cursor == '\0') break;
 		errno = 0;
 		char *next = NULL;
+		// string -> double
 		double value = strtod(cursor, &next);
 		if (cursor == next || errno == ERANGE) return false;
 
@@ -68,7 +69,7 @@ static bool parse_and_sum(char *line, double *result) {
 	*result = total;
 	return true;
 }
-
+// double -> string
 static size_t format_double(double value, char *buffer, size_t capacity) {
 	if (capacity == 0) return 0;
 	size_t index = 0;
@@ -115,15 +116,22 @@ static size_t format_double(double value, char *buffer, size_t capacity) {
 }
 
 int main(int argc, char **argv) {
-	if (argc < 2) fail("error: file name argument is missing\n");
-
+	// check how many arg 
+	if (argc < 2) {
+		fail("error: file name argument is missing\n");
+	}
+	// O_WRONLY - write only, O_CREAT - create if not exists, O_TRUNC - truncate if exists, 0600 - R & W
 	int file = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0600);
-	if (file == -1) fail("error: failed to open file\n");
+	if (file == -1) {
+		fail("error: failed to open file\n");
+	}
 
 	char line[BUFFER_SIZE];
 	while(true) {
 		ssize_t line_length = read_line(line, sizeof(line));
-		if (line_length < 0) fail("error: failed to read input\n");
+		if (line_length == -1){
+			fail("error: failed to read input\n");
+		}
 		if (line_length == 0) break;
 		if (line[line_length - 1] == '\n')line[line_length - 1] = '\0';
 		double sum = 0.0;
@@ -135,15 +143,17 @@ int main(int argc, char **argv) {
 
 		char value_buffer[128];
 		size_t value_length = format_double(sum, value_buffer, sizeof(value_buffer));
-		if (value_length == 0) fail("error: failed to format result\n");
+		if (value_length == 0) {
+			fail("error: failed to format result\n");
+		}
 
 		const char prefix[] = "sum: ";
 		const char newline = '\n';
-
+		// write to file
 		write_all(file, prefix, sizeof(prefix) - 1);
 		write_all(file, value_buffer, value_length);
 		write_all(file, &newline, 1);
-
+		// write to ter	
 		write_all(STDOUT_FILENO, prefix, sizeof(prefix) - 1);
 		write_all(STDOUT_FILENO, value_buffer, value_length);
 		write_all(STDOUT_FILENO, &newline, 1);

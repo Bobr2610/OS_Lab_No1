@@ -17,7 +17,7 @@ static size_t string_length(const char *text) {
 	while (text[length] != '\0') ++length;
 	return length;
 }
-
+// write all bytes to fd если не все записалось
 static void write_all(int fd, const char *buffer, size_t length) {
 	while (length > 0) {
 		ssize_t written = write(fd, buffer, length);
@@ -31,7 +31,7 @@ static void fail(const char *message) {
 	write_all(STDERR_FILENO, message, string_length(message));
 	_exit(EXIT_FAILURE);
 }
-
+//
 static ssize_t read_line(int fd, char *buffer, size_t capacity) {
 	if (capacity == 0) return -1;
 
@@ -50,7 +50,7 @@ static ssize_t read_line(int fd, char *buffer, size_t capacity) {
 	buffer[offset] = '\0';
 	return (ssize_t)offset;
 }
-
+// input
 static void trim_trailing_newline(char *line) {
 	size_t length = string_length(line);
 	if (length == 0) {
@@ -62,18 +62,24 @@ static void trim_trailing_newline(char *line) {
 static void build_child_path(char *result, size_t capacity) {
 	char executable_path[PATH_MAX];
 	ssize_t len = readlink("/proc/self/exe", executable_path, sizeof(executable_path) - 1);
-	if (len == -1) fail("error: failed to read /proc/self/exe\n");
+	if (len == -1){
+		fail("error: failed to read /proc/self/exe\n");
+	}
 
 	executable_path[len] = '\0';
 
 	while (len > 0 && executable_path[len] != '/') --len;
-	if (len == 0) fail("error: executable path is invalid\n");
+	if (len == 0) {
+		fail("error: executable path is invalid\n");
+	}
 
 	executable_path[len] = '\0';
 
 	size_t dir_length = string_length(executable_path);
 	size_t name_length = string_length(CHILD_PROGRAM_NAME);
-	if (dir_length + 1 + name_length + 1 > capacity) fail("error: child path buffer is too small\n");
+	if (dir_length + 1 + name_length + 1 > capacity) {
+		fail("error: child path buffer is too small\n");
+	}
 
 	size_t index = 0;
 	for (size_t i = 0; i < dir_length; ++i) result[index++] = executable_path[i];
@@ -82,7 +88,7 @@ static void build_child_path(char *result, size_t capacity) {
 
 	result[index] = '\0';
 }
-
+// write line to output_fd if line does not end with \n
 static void forward_line(int output_fd, const char *line) {
 	size_t length = string_length(line);
 	if (length == 0 || line[length - 1] != '\n') {
@@ -96,61 +102,94 @@ static void forward_line(int output_fd, const char *line) {
 int main(void) {
 	char filename[MAX_LINE_LENGTH];
 	ssize_t filename_len = read_line(STDIN_FILENO, filename, sizeof(filename));
-	if (filename_len <= 0) fail("error: failed to read filename\n");
+	if (filename_len <= 0) {
+		fail("error: failed to read filename\n");
+	}
 
 	trim_trailing_newline(filename);
-	if (string_length(filename) == 0) fail("error: filename must not be empty\n");
-
+	if (string_length(filename) == 0) {
+		fail("error: filename must not be empty\n");
+	}
+	// parent to child pipe
 	int parent_to_child[2];
-	if (pipe(parent_to_child) == -1) fail("error: failed to create pipe\n");
-
+	if (pipe(parent_to_child) == -1) {
+		fail("error: failed to create pipe\n");
+	}
+	// child to parent pipe
 	int child_to_parent[2];
-	if (pipe(child_to_parent) == -1) fail("error: failed to create pipe\n");
-	
+	if (pipe(child_to_parent) == -1) {
+		fail("error: failed to create pipe\n");
+	}
+	// fork child process
 	pid_t child = fork();
-	if (child == -1) fail("error: failed to fork\n");
+	if (child == -1) {
+		fail("error: failed to fork\n");
+	}
 
 	if (child == 0) {
-		if (close(parent_to_child[1]) == -1 || close(child_to_parent[0]) == -1) fail("error: failed to close descriptors in child\n");
+		if (close(parent_to_child[1]) == -1 || close(child_to_parent[0]) == -1) {
+			fail("error: failed to close descriptors in child\n");
+		}
 
-		if (dup2(parent_to_child[0], STDIN_FILENO) == -1) fail("error: failed to redirect stdin\n");
+		if (dup2(parent_to_child[0], STDIN_FILENO) == -1) {
+			fail("error: failed to redirect stdin\n");
+		}
 
-		if (dup2(child_to_parent[1], STDOUT_FILENO) == -1) fail("error: failed to redirect stdout\n");
+		if (dup2(child_to_parent[1], STDOUT_FILENO) == -1) {
+			fail("error: failed to redirect stdout\n");
+		}
         
-		if (close(parent_to_child[0]) == -1 || close(child_to_parent[1]) == -1) fail("error: failed to close redundant descriptors\n");
+		if (close(parent_to_child[0]) == -1 || close(child_to_parent[1]) == -1) {
+			fail("error: failed to close redundant descriptors\n");
+		}
 
 		char child_path[PATH_MAX];
 		build_child_path(child_path, sizeof(child_path));
-
+		// pass filename to child process
 		char *const args[] = {CHILD_PROGRAM_NAME, filename, NULL};
+		// замена текущего процесса parent на child ожидвет завершения
 		execv(child_path, args);
+		// закрываем длчерний процесс
 		fail("error: exec failed\n");
 	}
-
-	if (close(parent_to_child[0]) == -1 || close(child_to_parent[1]) == -1) fail("error: failed to close descriptors in parent\n");
+	// is pipe closed
+	if (close(parent_to_child[0]) == -1 || close(child_to_parent[1]) == -1) {
+		fail("error: failed to close descriptors in parent\n");
+	}
 
 	char line_buffer[MAX_LINE_LENGTH];
 	while(true) {
 		ssize_t line_length = read_line(STDIN_FILENO, line_buffer, sizeof(line_buffer));
-		if (line_length < 0) fail("error: failed to read input line\n");
+		if (line_length == -1) {
+			fail("error: failed to read input line\n");
+		}
 
 		if (line_length == 0) break;
 
 		if (line_buffer[0] == '\n') break;
 
+		// write line to parent to child pipe
 		write_all(parent_to_child[1], line_buffer, (size_t)line_length);
 
 		char response[MAX_LINE_LENGTH];
 		ssize_t response_length = read_line(child_to_parent[0], response, sizeof(response));
-		if (response_length <= 0) fail("error: child response failed\n");
+		if (response_length <= 0) {
+			fail("error: child response failed\n");
+		}
 		forward_line(STDOUT_FILENO, response);
 	}
 
-	if (close(parent_to_child[1]) == -1 || close(child_to_parent[0]) == -1) fail("error: failed to close pipes\n");
-
+	if (close(parent_to_child[1]) == -1 || close(child_to_parent[0]) == -1) {
+		fail("error: failed to close pipes\n");
+	}
+	// wait for child process to finish
 	int status = 0;
 	if (waitpid(child, &status, 0) == -1) {
 		fail("error: waitpid failed\n");
 	}
-	return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+	if (WIFEXITED(status)) {
+		return WEXITSTATUS(status);
+	} else {
+		return EXIT_FAILURE;
+	}
 }
