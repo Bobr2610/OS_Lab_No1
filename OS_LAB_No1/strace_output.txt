@@ -1,0 +1,228 @@
+377   execve("./lab_01_parent", ["./lab_01_parent"], 0x7fff58ecb748 /* 25 vars */) = 0
+377   brk(NULL)                         = 0x64c24d821000
+377   arch_prctl(0x3001 /* ARCH_??? */, 0x7ffcdaaa6690) = -1 EINVAL (Invalid argument)
+377   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7d415344a000
+377   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+377   openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+377   newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=20892, ...}, AT_EMPTY_PATH) = 0
+377   mmap(NULL, 20892, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7d4153444000
+377   close(3)                          = 0
+377   openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+377   read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\237\2\0\0\0\0\0"..., 832) = 832
+377   pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+377   pread64(3, "\4\0\0\0 \0\0\0\5\0\0\0GNU\0\2\0\0\300\4\0\0\0\3\0\0\0\0\0\0\0"..., 48, 848) = 48
+377   pread64(3, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0O{\f\225\\=\201\327\312\301P\32$\230\266\235"..., 68, 896) = 68
+377   newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=2220400, ...}, AT_EMPTY_PATH) = 0
+377   pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+377   mmap(NULL, 2264656, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7d4153200000
+377   mprotect(0x7d4153228000, 2023424, PROT_NONE) = 0
+377   mmap(0x7d4153228000, 1658880, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x7d4153228000
+377   mmap(0x7d41533bd000, 360448, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1bd000) = 0x7d41533bd000
+377   mmap(0x7d4153416000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x215000) = 0x7d4153416000
+377   mmap(0x7d415341c000, 52816, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7d415341c000
+377   close(3)                          = 0
+377   mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7d4153441000
+377   arch_prctl(ARCH_SET_FS, 0x7d4153441740) = 0
+377   set_tid_address(0x7d4153441a10)   = 377
+377   set_robust_list(0x7d4153441a20, 24) = 0
+377   rseq(0x7d41534420e0, 0x20, 0, 0x53053053) = 0
+377   mprotect(0x7d4153416000, 16384, PROT_READ) = 0
+377   mprotect(0x64c229796000, 4096, PROT_READ) = 0
+377   mprotect(0x7d4153484000, 8192, PROT_READ) = 0
+377   prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+377   munmap(0x7d4153444000, 20892)     = 0
+377   read(0, "t", 1)                   = 1
+377   read(0, "e", 1)                   = 1
+377   read(0, "s", 1)                   = 1
+377   read(0, "t", 1)                   = 1
+377   read(0, "_", 1)                   = 1
+377   read(0, "o", 1)                   = 1
+377   read(0, "u", 1)                   = 1
+377   read(0, "t", 1)                   = 1
+377   read(0, "p", 1)                   = 1
+377   read(0, "u", 1)                   = 1
+377   read(0, "t", 1)                   = 1
+377   read(0, ".", 1)                   = 1
+377   read(0, "t", 1)                   = 1
+377   read(0, "x", 1)                   = 1
+377   read(0, "t", 1)                   = 1
+377   read(0, "\n", 1)                  = 1
+377   pipe2([3, 4], 0)                  = 0
+377   pipe2([5, 6], 0)                  = 0
+377   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7d4153441a10) = 378
+378   set_robust_list(0x7d4153441a20, 24 <unfinished ...>
+377   close(3 <unfinished ...>
+378   <... set_robust_list resumed>)    = 0
+377   <... close resumed>)              = 0
+378   close(4 <unfinished ...>
+377   close(6 <unfinished ...>
+378   <... close resumed>)              = 0
+377   <... close resumed>)              = 0
+378   close(5 <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... close resumed>)              = 0
+377   <... read resumed>"2", 1)         = 1
+378   dup2(3, 0 <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... dup2 resumed>)               = 0
+377   <... read resumed>".", 1)         = 1
+378   dup2(6, 1 <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... dup2 resumed>)               = 1
+377   <... read resumed>"0", 1)         = 1
+378   close(3 <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... close resumed>)              = 0
+377   <... read resumed>" ", 1)         = 1
+378   close(6 <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... close resumed>)              = 0
+377   <... read resumed>"2", 1)         = 1
+378   readlink("/proc/self/exe",  <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... readlink resumed>"/mnt/c/MAI/3_sem/OS/OS_LAB_1/OS_"..., 4095) = 53
+377   <... read resumed>".", 1)         = 1
+378   execve("/mnt/c/MAI/3_sem/OS/OS_LAB_1/OS_LAB_No1/lab_01_child", ["lab_01_child", "test_output.txt"], 0x7ffcdaaa6868 /* 25 vars */ <unfinished ...>
+377   read(0, "5", 1)                   = 1
+377   read(0, " ", 1)                   = 1
+377   read(0, "3", 1)                   = 1
+377   read(0,  <unfinished ...>
+378   <... execve resumed>)             = 0
+377   <... read resumed>".", 1)         = 1
+378   brk(NULL <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... brk resumed>)                = 0x562a68229000
+377   <... read resumed>"5", 1)         = 1
+378   arch_prctl(0x3001 /* ARCH_??? */, 0x7ffe4780e250 <unfinished ...>
+377   read(0,  <unfinished ...>
+378   <... arch_prctl resumed>)         = -1 EINVAL (Invalid argument)
+377   <... read resumed>"\n", 1)        = 1
+378   mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0 <unfinished ...>
+377   write(4, "2.0 2.5 3.5\n", 12 <unfinished ...>
+378   <... mmap resumed>)               = 0x71aa9d6c0000
+377   <... write resumed>)              = 12
+378   access("/etc/ld.so.preload", R_OK <unfinished ...>
+377   read(5,  <unfinished ...>
+378   <... access resumed>)             = -1 ENOENT (No such file or directory)
+378   openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+378   newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=20892, ...}, AT_EMPTY_PATH) = 0
+378   mmap(NULL, 20892, PROT_READ, MAP_PRIVATE, 3, 0) = 0x71aa9d6ba000
+378   close(3)                          = 0
+378   openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+378   read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P\237\2\0\0\0\0\0"..., 832) = 832
+378   pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+378   pread64(3, "\4\0\0\0 \0\0\0\5\0\0\0GNU\0\2\0\0\300\4\0\0\0\3\0\0\0\0\0\0\0"..., 48, 848) = 48
+378   pread64(3, "\4\0\0\0\24\0\0\0\3\0\0\0GNU\0O{\f\225\\=\201\327\312\301P\32$\230\266\235"..., 68, 896) = 68
+378   newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=2220400, ...}, AT_EMPTY_PATH) = 0
+378   pread64(3, "\6\0\0\0\4\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0@\0\0\0\0\0\0\0"..., 784, 64) = 784
+378   mmap(NULL, 2264656, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x71aa9d400000
+378   mprotect(0x71aa9d428000, 2023424, PROT_NONE) = 0
+378   mmap(0x71aa9d428000, 1658880, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x28000) = 0x71aa9d428000
+378   mmap(0x71aa9d5bd000, 360448, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1bd000) = 0x71aa9d5bd000
+378   mmap(0x71aa9d616000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x215000) = 0x71aa9d616000
+378   mmap(0x71aa9d61c000, 52816, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x71aa9d61c000
+378   close(3)                          = 0
+378   mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x71aa9d6b7000
+378   arch_prctl(ARCH_SET_FS, 0x71aa9d6b7740) = 0
+378   set_tid_address(0x71aa9d6b7a10)   = 378
+378   set_robust_list(0x71aa9d6b7a20, 24) = 0
+378   rseq(0x71aa9d6b80e0, 0x20, 0, 0x53053053) = 0
+378   mprotect(0x71aa9d616000, 16384, PROT_READ) = 0
+378   mprotect(0x562a4fd4c000, 4096, PROT_READ) = 0
+378   mprotect(0x71aa9d6fa000, 8192, PROT_READ) = 0
+378   prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+378   munmap(0x71aa9d6ba000, 20892)     = 0
+378   openat(AT_FDCWD, "test_output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0600) = 3
+378   read(0, "2", 1)                   = 1
+378   read(0, ".", 1)                   = 1
+378   read(0, "0", 1)                   = 1
+378   read(0, " ", 1)                   = 1
+378   read(0, "2", 1)                   = 1
+378   read(0, ".", 1)                   = 1
+378   read(0, "5", 1)                   = 1
+378   read(0, " ", 1)                   = 1
+378   read(0, "3", 1)                   = 1
+378   read(0, ".", 1)                   = 1
+378   read(0, "5", 1)                   = 1
+378   read(0, "\n", 1)                  = 1
+378   write(3, "sum: ", 5)              = 5
+378   write(3, "8.0", 3)                = 3
+378   write(3, "\n", 1)                 = 1
+378   write(1, "sum: ", 5 <unfinished ...>
+377   <... read resumed>"s", 1)         = 1
+378   <... write resumed>)              = 5
+377   read(5,  <unfinished ...>
+378   write(1, "8.0", 3 <unfinished ...>
+377   <... read resumed>"u", 1)         = 1
+378   <... write resumed>)              = 3
+377   read(5,  <unfinished ...>
+378   write(1, "\n", 1 <unfinished ...>
+377   <... read resumed>"m", 1)         = 1
+378   <... write resumed>)              = 1
+377   read(5,  <unfinished ...>
+378   read(0,  <unfinished ...>
+377   <... read resumed>":", 1)         = 1
+377   read(5, " ", 1)                   = 1
+377   read(5, "8", 1)                   = 1
+377   read(5, ".", 1)                   = 1
+377   read(5, "0", 1)                   = 1
+377   read(5, "\n", 1)                  = 1
+377   write(1, "sum: 8.0\n", 9)         = 9
+377   read(0, "1", 1)                   = 1
+377   read(0, "0", 1)                   = 1
+377   read(0, " ", 1)                   = 1
+377   read(0, "2", 1)                   = 1
+377   read(0, "0", 1)                   = 1
+377   read(0, " ", 1)                   = 1
+377   read(0, "3", 1)                   = 1
+377   read(0, "0", 1)                   = 1
+377   read(0, "\n", 1)                  = 1
+377   write(4, "10 20 30\n", 9)         = 9
+378   <... read resumed>"1", 1)         = 1
+377   read(5,  <unfinished ...>
+378   read(0, "0", 1)                   = 1
+378   read(0, " ", 1)                   = 1
+378   read(0, "2", 1)                   = 1
+378   read(0, "0", 1)                   = 1
+378   read(0, " ", 1)                   = 1
+378   read(0, "3", 1)                   = 1
+378   read(0, "0", 1)                   = 1
+378   read(0, "\n", 1)                  = 1
+378   write(3, "sum: ", 5)              = 5
+378   write(3, "60.0", 4)               = 4
+378   write(3, "\n", 1)                 = 1
+378   write(1, "sum: ", 5 <unfinished ...>
+377   <... read resumed>"s", 1)         = 1
+378   <... write resumed>)              = 5
+377   read(5,  <unfinished ...>
+378   write(1, "60.0", 4 <unfinished ...>
+377   <... read resumed>"u", 1)         = 1
+378   <... write resumed>)              = 4
+377   read(5,  <unfinished ...>
+378   write(1, "\n", 1 <unfinished ...>
+377   <... read resumed>"m", 1)         = 1
+377   read(5,  <unfinished ...>
+378   <... write resumed>)              = 1
+377   <... read resumed>":", 1)         = 1
+378   read(0,  <unfinished ...>
+377   read(5, " ", 1)                   = 1
+377   read(5, "6", 1)                   = 1
+377   read(5, "0", 1)                   = 1
+377   read(5, ".", 1)                   = 1
+377   read(5, "0", 1)                   = 1
+377   read(5, "\n", 1)                  = 1
+377   write(1, "sum: 60.0\n", 10)       = 10
+377   read(0, "\n", 1)                  = 1
+377   close(4)                          = 0
+378   <... read resumed>"", 1)          = 0
+377   close(5 <unfinished ...>
+378   close(3 <unfinished ...>
+377   <... close resumed>)              = 0
+377   wait4(378,  <unfinished ...>
+378   <... close resumed>)              = 0
+378   exit_group(0)                     = ?
+378   +++ exited with 0 +++
+377   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 378
+377   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=378, si_uid=1000, si_status=0, si_utime=0, si_stime=0} ---
+377   exit_group(0)                     = ?
+377   +++ exited with 0 +++
