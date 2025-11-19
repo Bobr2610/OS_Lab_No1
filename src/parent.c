@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -8,7 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define CHILD_PROGRAM_NAME "child.c"
+#define CHILD_PROGRAM_NAME "lab_01_child"
 #define MAX_LINE_LENGTH 4096
 
 static size_t string_length(const char *text) {

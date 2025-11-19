@@ -440,7 +440,7 @@ sum: -6.6
 
 ### Strace:
 
-Для анализа системных вызовов использовалась утилита `strace` с флагом `-f` для отслеживания дочерних процессов:
+Для анализа системных вызовов использовалась утилита `strace` с флагом `-f` для отслеживания дочерних процессов. Программа была запущена через WSL:
 
 ```bash
 $ strace -f -o strace_output.txt ./build/lab_01_parent
@@ -449,62 +449,95 @@ $ strace -f -o strace_output.txt ./build/lab_01_parent
 Ниже представлен фрагмент вывода `strace` с выделенными системными вызовами, используемыми в нашей программе. **Выделенные жирным шрифтом** строки соответствуют системным вызовам, вызванным непосредственно из нашего кода:
 
 ```
-execve("./build/lab_01_parent", ["./build/lab_01_parent"], 0x7ffc12345678 /* 49 vars */) = 0
+320   execve("./build/lab_01_parent", ["./build/lab_01_parent"], 0x7ffd7a7c80d8 /* 22 vars */) = 0
 ...
-read(0, "results.txt\n", 4096)            = 12
+320   read(0, "t", 1)                   = 1
+320   read(0, "e", 1)                   = 1
 ...
-**readlink("/proc/self/exe", "/path/to/build/lab_01_parent", 1023) = 35**
+320   read(0, "\n", 1)                  = 1
+320   **pipe2([3, 4], 0)                  = 0**  // parent_to_child (pipe)
+320   **pipe2([5, 6], 0)                  = 0**  // child_to_parent (pipe)
+320   **clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7e20786a6a10) = 321**  // fork
+strace: Process 321 attached
 ...
-**pipe([3, 4])                            = 0**  // parent_to_child
-**pipe([5, 6])                            = 0**  // child_to_parent
+320   close(3 <unfinished ...>
+321   **close(4 <unfinished ...>**  // закрытие write конца parent_to_child в child
+320   <... close resumed>)              = 0
+321   <... close resumed>)              = 0
+320   close(6 <unfinished ...>
+321   **close(5 <unfinished ...>**  // закрытие read конца child_to_parent в child
+320   <... close resumed>)              = 0
+321   <... close resumed>)              = 0
 ...
-**clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f8c0c66b810) = 12345**
-strace: Process 12345 attached
+321   **dup2(3, 0 <unfinished ...>**  // перенаправление stdin на parent_to_child[0]
+321   <... dup2 resumed>)               = 0
 ...
-[pid 12345] **close(4)**                    = 0  // закрытие write конца parent_to_child в child
-[pid 12345] **close(5)**                    = 0  // закрытие read конца child_to_parent в child
-[pid 12345] **dup2(3, 0)**                  = 0  // перенаправление stdin на parent_to_child[0]
-[pid 12345] **close(3)**                    = 0
-[pid 12345] **dup2(6, 1)**                  = 1  // перенаправление stdout на child_to_parent[1]
-[pid 12345] **close(6)**                    = 0
-[pid 12345] **execve("/path/to/build/lab_01_child", ["child.c", "results.txt"], 0x7ffc12345678 /* 49 vars */) = 0**
+321   **dup2(6, 1 <unfinished ...>**  // перенаправление stdout на child_to_parent[1]
+321   <... dup2 resumed>)               = 1
 ...
-[pid 12345] **open("results.txt", O_WRONLY|O_CREAT|O_TRUNC, 0600) = 3**
+321   **close(3 <unfinished ...>**  // закрытие после dup2
+321   <... close resumed>)              = 0
+321   **close(6 <unfinished ...>**  // закрытие после dup2
+321   <... close resumed>)              = 0
+321   **readlink("/proc/self/exe",  <unfinished ...>**  // получение пути к исполняемому файлу
+321   <... readlink resumed>"/mnt/c/MAI/3_sem/OS/OS_LAB_1/bui"..., 4095) = 48
+321   **execve("/mnt/c/MAI/3_sem/OS/OS_LAB_1/build/lab_01_child", ["lab_01_child", "test_output.txt"], 0x7ffc61753238 /* 22 vars */ <unfinished ...>**  // execv
 ...
-[pid 12345] **read(0, "1.5 2.5 3.0\n", 4096) = 12**
+321   <... execve resumed>)             = 0
 ...
-[pid 12345] **write(3, "sum: 7.0\n", 9) = 9**  // запись в файл
-[pid 12345] **write(1, "sum: 7.0\n", 9) = 9**  // запись в stdout (pipe к родителю)
+321   **openat(AT_FDCWD, "test_output.txt", O_WRONLY|O_CREAT|O_TRUNC, 0600) = 3**  // open
+321   **read(0, "1", 1)                   = 1**  // чтение из stdin (pipe)
+321   read(0, ".", 1)                   = 1
+321   read(0, "5", 1)                   = 1
 ...
-**read(5, "sum: 7.0\n", 4096) = 9**  // родитель читает ответ от child
-**write(1, "sum: 7.0\n", 9) = 9**    // родитель выводит в stdout
+321   read(0, "\n", 1)                  = 1
+321   **write(3, "sum: ", 5)              = 5**  // запись в файл
+321   **write(3, "7.0", 3)                = 3**  // запись в файл
+321   **write(3, "\n", 1)                 = 1**  // запись в файл
+321   **write(1, "sum: ", 5 <unfinished ...>**  // запись в stdout (pipe к родителю)
+321   <... write resumed>)              = 5
+321   **write(1, "7.0", 3 <unfinished ...>**  // запись в stdout (pipe к родителю)
+321   <... write resumed>)              = 3
+321   **write(1, "\n", 1 <unfinished ...>**  // запись в stdout (pipe к родителю)
+321   <... write resumed>)              = 1
 ...
-[pid 12345] **read(0, "", 4096) = 0**  // конец ввода
-[pid 12345] **close(3)**                = 0  // закрытие файла
-[pid 12345] **_exit(0)**                = ?
-[pid 12345] +++ exited with 0 +++
+320   **read(5,  <unfinished ...>**  // родитель читает ответ от child
+320   <... read resumed>"s", 1)         = 1
+320   read(5, "u", 1)                   = 1
 ...
-**close(4)**                             = 0  // закрытие write конца parent_to_child в parent
-**close(5)**                             = 0  // закрытие read конца child_to_parent в parent
-**waitpid(12345, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0) = 12345**
+320   read(5, "\n", 1)                  = 1
+320   **write(1, "sum: 7.0\n", 9)         = 9**  // родитель выводит в stdout
 ...
-exit_group(0)                           = ?
-+++ exited with 0 +++
+321   **read(0,  <unfinished ...>**  // конец ввода
+321   <... read resumed>"", 1)          = 0
+320   **close(4)                          = 0**  // закрытие write конца parent_to_child в parent
+320   close(5 <unfinished ...>
+321   **close(3 <unfinished ...>**  // закрытие файла
+320   <... close resumed>)              = 0
+321   <... close resumed>)              = 0
+320   **wait4(321,  <unfinished ...>**  // waitpid
+...
+321   **exit_group(0)                     = ?**  // _exit
+321   +++ exited with 0 +++
+320   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 321
+...
+320   exit_group(0)                     = ?
+320   +++ exited with 0 +++
 ```
 
 **Ключевые системные вызовы из нашего кода:**
 
-1. **readlink("/proc/self/exe", ...)** – получение пути к исполняемому файлу родительского процесса для построения пути к дочернему процессу
-2. **pipe([3, 4])** и **pipe([5, 6])** – создание двух каналов для двусторонней связи между процессами
-3. **clone(...)** (реализация fork) – создание дочернего процесса
-4. **close()** – закрытие ненужных файловых дескрипторов
-5. **dup2()** – перенаправление стандартных потоков ввода/вывода на pipe
-6. **execve()** – замена образа процесса на дочернюю программу
-7. **open()** – открытие файла для записи результатов
-8. **read()** – чтение данных из stdin/pipe
-9. **write()** – запись данных в файл и в stdout/pipe
-10. **waitpid()** – ожидание завершения дочернего процесса
-11. **_exit()** – завершение процесса
+1. **readlink("/proc/self/exe", ...)** (строка 82) – получение пути к исполняемому файлу родительского процесса для построения пути к дочернему процессу
+2. **pipe2([3, 4], 0)** и **pipe2([5, 6], 0)** (строки 50-51) – создание двух каналов для двусторонней связи между процессами (pipe)
+3. **clone(...)** (строка 52) – создание дочернего процесса (fork)
+4. **close()** (строки 53, 57, 58, 62, 74, 78, 103, 117, 215, 217, 218) – закрытие ненужных файловых дескрипторов
+5. **dup2()** (строки 66, 70) – перенаправление стандартных потоков ввода/вывода на pipe
+6. **execve()** (строка 86) – замена образа процесса на дочернюю программу (execv)
+7. **openat()** (строка 128) – открытие файла для записи результатов (open)
+8. **read()** (строки 34-49, 61, 65, 69, 73, 77, 81, 85, 88-92, 94, 129-140, 147, 151, 155, 156, 158-162, 164-175, 178, 179-189, 196, 200, 204, 205, 207-212, 214) – чтение данных из stdin/pipe
+9. **write()** (строки 93, 141-143, 144, 148, 152, 163, 176, 190-192, 193, 197, 201, 213) – запись данных в файл и в stdout/pipe
+10. **wait4()** (строка 220) – ожидание завершения дочернего процесса (waitpid)
+11. **exit_group()** (строки 222, 226) – завершение процесса (_exit)
 
 Все системные вызовы проверяются на ошибки: возвращаемые значения сравниваются с -1 (или 0 для некоторых вызовов), и при ошибке программа выводит сообщение и завершается.
 
