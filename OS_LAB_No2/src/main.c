@@ -4,34 +4,19 @@
 #include <time.h>
 #include <stdbool.h>
 
-#ifdef _WIN32
-    #include <windows.h>
-    #define THREAD_TYPE HANDLE
-    #define THREAD_RETURN DWORD WINAPI
-    #define THREAD_CREATE(handle, func, arg) \
-        (*(handle) = CreateThread(NULL, 0, func, arg, 0, NULL)) != NULL
-    #define THREAD_JOIN(handle) WaitForSingleObject(handle, INFINITE)
-    #define THREAD_CLOSE(handle) CloseHandle(handle)
-    #define MUTEX_TYPE HANDLE
-    #define MUTEX_INIT(mutex) (*(mutex) = CreateMutex(NULL, FALSE, NULL)) != NULL
-    #define MUTEX_LOCK(mutex) WaitForSingleObject(*(mutex), INFINITE)
-    #define MUTEX_UNLOCK(mutex) ReleaseMutex(*(mutex))
-    #define MUTEX_DESTROY(mutex) CloseHandle(*(mutex))
-#else
-    #include <pthread.h>
-    #include <unistd.h>
-    #define THREAD_TYPE pthread_t
-    #define THREAD_RETURN void*
-    #define THREAD_CREATE(handle, func, arg) \
-        pthread_create(handle, NULL, func, arg) == 0
-    #define THREAD_JOIN(handle) pthread_join(handle, NULL)
-    #define THREAD_CLOSE(handle) (void)0
-    #define MUTEX_TYPE pthread_mutex_t
-    #define MUTEX_INIT(mutex) pthread_mutex_init(mutex, NULL) == 0
-    #define MUTEX_LOCK(mutex) pthread_mutex_lock(mutex)
-    #define MUTEX_UNLOCK(mutex) pthread_mutex_unlock(mutex)
-    #define MUTEX_DESTROY(mutex) pthread_mutex_destroy(mutex)
-#endif
+#include <pthread.h>
+#include <unistd.h>
+#define THREAD_TYPE pthread_t
+#define THREAD_RETURN void*
+#define THREAD_CREATE(handle, func, arg) \
+    pthread_create(handle, NULL, func, arg) == 0
+#define THREAD_JOIN(handle) pthread_join(handle, NULL)
+#define THREAD_CLOSE(handle) (void)0
+#define MUTEX_TYPE pthread_mutex_t
+#define MUTEX_INIT(mutex) pthread_mutex_init(mutex, NULL) == 0
+#define MUTEX_LOCK(mutex) pthread_mutex_lock(mutex)
+#define MUTEX_UNLOCK(mutex) pthread_mutex_unlock(mutex)
+#define MUTEX_DESTROY(mutex) pthread_mutex_destroy(mutex)
 
 typedef struct {
     int *array;
@@ -75,11 +60,7 @@ static THREAD_RETURN batcher_merge_thread(void *arg) {
     data->active_threads--;
     MUTEX_UNLOCK(data->active_mutex);
     
-#ifdef _WIN32
-    return 0;
-#else
-    return NULL;
-#endif
+return NULL;
 }
 
 static void batcher_merge(int *array, int n, int step, sort_data_t *data) {
@@ -240,13 +221,8 @@ int main(int argc, char *argv[]) {
     printf("Time taken: %.6f seconds\n", time_taken);
     printf("Max threads used: %d\n", max_threads);
     printf("\nTo verify thread count, use:\n");
-#ifdef _WIN32
-    printf("  Windows: Task Manager -> Details -> Threads column\n");
-    printf("  Or: wmic process where name=\"%s.exe\" get ThreadCount\n", argv[0]);
-#else
     printf("  Linux: ps -eLf | grep %s | wc -l\n", argv[0]);
     printf("  Or: top -H -p $(pgrep -f %s)\n", argv[0]);
-#endif
     
     free(array);
     return sorted ? EXIT_SUCCESS : EXIT_FAILURE;
